@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班會流程大冒險系統</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #fffdf9;
+            --paper-line: #e0e0e0;
+            --primary-pink: #ffb7b2;
+            --primary-blue: #a2d2ff;
+            --primary-yellow: #fff4bd;
+            --primary-green: #c7f9cc;
+            --text-dark: #4a4a4a;
+            --text-serif: #2c3e50;
+            --accent-purple: #e2cbf7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(var(--paper-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        h1, h2, h3, h4, h5, h6, .section-badge, .role-title, .challenge-header { 
+            font-family: 'Noto Serif TC', serif; 
+            font-weight: 900; 
+            color: var(--text-serif);
+        }
+
+        /* --- 吉祥物 --- */
+        #mascot-wrapper {
+            position: fixed; bottom: 20px; left: 20px; z-index: 10000;
+            width: 140px; touch-action: none;
+        }
+        #mascot-img {
+            width: 100%; cursor: grab;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.15));
+            transition: transform 0.2s, filter 0.3s;
+        }
+        #mascot-img:active { cursor: grabbing; transform: scale(0.95); }
+        #mascot-img:hover { filter: drop-shadow(0 0 10px var(--primary-pink)); }
+
+        #mascot-bubble {
+            position: absolute; bottom: 110%; left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: #fff; padding: 12px 18px;
+            border-radius: 15px; border: 3px solid var(--primary-blue);
+            min-width: 220px; text-align: center; font-weight: 700;
+            color: #333; box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+            opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; font-size: 1rem; z-index: 10001;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        #mascot-bubble::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%;
+            transform: translateX(-50%); border-width: 10px 10px 0;
+            border-style: solid; border-color: var(--primary-blue) transparent;
+        }
+
+        /* --- Header --- */
+        header { text-align: center; padding: 4rem 1rem 2rem; }
+
+        h1 {
+            font-size: 3.5rem;
+            background: #fff;
+            display: inline-block;
+            padding: 15px 50px;
+            border: 4px double var(--text-serif);
+            border-radius: 60px;
+            transform: rotate(-2deg);
+            box-shadow: 8px 8px 0px var(--primary-pink);
+            color: var(--text-serif);
+        }
+
+        .subtitle {
+            margin-top: 25px;
+            background: var(--primary-yellow);
+            display: inline-block;
+            padding: 8px 25px;
+            transform: rotate(1deg);
+            font-weight: 700;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+            border-radius: 30px;
+            color: #555;
+            font-size: 1.2rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- 章節標題 --- */
+        .section-title {
+            margin: 5rem 0 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            background: var(--text-serif);
+            color: #fff;
+            padding: 10px 35px;
+            font-size: 1.8rem;
+            border-radius: 5px;
+            position: relative; z-index: 2;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+            transform: rotate(-1deg);
+        }
+
+        .tape-deco {
+            position: absolute; top: -12px; left: 50%;
+            transform: translateX(-50%) rotate(1.5deg);
+            width: 150px; height: 35px;
+            background: rgba(255, 183, 178, 0.6);
+            z-index: 3;
+        }
+
+        /* --- 隨堂小挑戰區塊 --- */
+        .mini-challenge-box {
+            background: #fff;
+            border: 2px dashed var(--text-serif);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 40px 0;
+            box-shadow: 5px 5px 0 var(--accent-purple);
+            position: relative;
+        }
+        .mini-tag {
+            position: absolute; top: -15px; left: 20px;
+            background: var(--accent-purple); color: var(--text-serif);
+            padding: 5px 15px; font-weight: bold; border: 2px solid var(--text-serif);
+            font-family: 'Noto Serif TC'; transform: rotate(-2deg);
+        }
+        .challenge-header { font-size: 1.3rem; margin-bottom: 15px; color: var(--text-serif); }
+        .mini-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        .mini-btn {
+            flex: 1; padding: 12px; border: 2px solid #ddd; background: #f9f9f9;
+            border-radius: 8px; cursor: pointer; font-family: 'Noto Sans TC';
+            transition: 0.2s; font-weight: bold; color: #555;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+            min-height: 50px;
+        }
+        .mini-btn:hover { background: #fff; border-color: var(--text-serif); color: var(--text-serif); }
+        .mini-btn.correct { background: var(--primary-green); border-color: #2e8b57; color: #004d00; }
+        .mini-btn.wrong { background: var(--primary-pink); border-color: #b22222; color: #8b0000; }
+        
+        .mini-feedback { margin-top: 15px; font-size: 0.95rem; font-weight: bold; display: none; padding: 10px; border-radius: 8px; }
+        
+        /* 小挑戰的重置按鈕 (更新為 Font Awesome) */
+        .mini-reset-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            margin-left: 10px; font-size: 0.8rem;
+            background: #fff; border: 1px solid #999; padding: 4px 10px;
+            border-radius: 4px; cursor: pointer; color: #555;
+            font-family: 'Noto Sans TC';
+        }
+        .mini-reset-btn:hover { background: #eee; color: var(--text-serif); border-color: var(--text-serif); }
+
+        /* --- 角色卡片 --- */
+        .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2.5rem; }
+        .flip-card { background-color: transparent; height: 450px; perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 5px; padding: 20px; background: #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 1px solid #eee;
+        }
+        .flip-card-front { border-bottom: 50px solid #fff; border-left: 10px solid #fff; border-right: 10px solid #fff; border-top: 10px solid #fff; }
+        .role-img { width: 100%; height: 220px; object-fit: contain; background: #fafafa; margin-bottom: 20px; border: 1px dashed #ddd; }
+        .role-title { font-size: 1.8rem; color: #333; border-bottom: 2px solid var(--primary-pink); display: inline-block; margin-bottom: 5px; }
+        .flip-card-back { transform: rotateY(180deg); background-image: linear-gradient(#f1f1f1 1px, transparent 1px); background-size: 100% 1.5rem; padding-top: 30px; text-align: left; display: flex; flex-direction: column; }
+        .flip-card-back h3 { color: var(--primary-blue); margin-bottom: 10px; font-family: 'Noto Serif TC'; }
+        .flip-card-back ul { padding-left: 20px; list-style-type: none; }
+        .flip-card-back li { margin-bottom: 8px; position: relative; }
+        .flip-card-back li::before { content: '\f00c'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--primary-pink); position: absolute; left: -20px; }
+
+        /* --- 流程區塊 --- */
+        .step-box {
+            background: var(--primary-yellow); padding: 25px; margin-bottom: 25px;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.1); position: relative;
+            transform: rotate(-0.5deg); border-radius: 2px 2px 25px 2px;
+        }
+        .step-box::after { content: ''; position: absolute; bottom: 8px; right: 8px; width: 20px; height: 20px; background: rgba(0,0,0,0.1); transform: skew(15deg) rotate(4deg); filter: blur(5px); z-index: -1; }
+        .step-box:nth-child(even) { background: var(--primary-green); transform: rotate(0.5deg); }
+        .step-header { display: flex; align-items: center; gap: 10px; border-bottom: 2px dashed #fff; padding-bottom: 10px; margin-bottom: 15px; }
+        .step-header h3 { font-size: 1.4rem; }
+        .step-icon { font-size: 1.5rem; color: #555; }
+
+        /* --- Tab 系統 --- */
+        .tab-container { border: 3px solid var(--text-serif); border-radius: 15px; background: #fff; box-shadow: 8px 8px 0 rgba(0,0,0,0.1); overflow: hidden; margin-top: 20px; }
+        .tabs { display: flex; background: #eee; border-bottom: 3px solid var(--text-serif); }
+        .tab-btn {
+            flex: 1; padding: 18px; border: none; border-right: 2px solid var(--text-serif);
+            background: #fff0f5; font-weight: 700; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Noto Sans TC', sans-serif;
+        }
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn.active { background: #fff; color: #ff6b6b; }
+        .tab-btn:hover { background: #ffe4e1; }
+        .tab-content { display: none; padding: 30px; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+
+        .notebook-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.1rem; }
+        .notebook-table th { background: var(--primary-pink); color: #fff; padding: 12px; border: 2px solid #555; font-family: 'Noto Serif TC'; }
+        .notebook-table td { padding: 12px; border: 2px solid #555; text-align: center; background: #fff; }
+
+        .note-bubble { background: #e3f2fd; border-left: 5px solid var(--primary-blue); padding: 15px; margin: 15px 0; border-radius: 0 10px 10px 0; font-size: 1rem; }
+        .note-bubble strong { color: #1565c0; display: block; margin-bottom: 5px; font-weight: 900; }
+
+        .action-btn {
+            background: var(--text-serif); color: #fff; padding: 10px 25px; border-radius: 50px;
+            border: none; cursor: pointer; font-weight: 700; font-family: 'Noto Sans TC', sans-serif;
+            margin: 5px; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 0 #1a252f; transition: transform 0.1s;
+        }
+        .action-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #000; }
+        .btn-pink { background: #ff9a9e; box-shadow: 0 4px 0 #d68084; }
+        .btn-blue { background: #a2d2ff; box-shadow: 0 4px 0 #8cbbe6; }
+
+        /* --- 測驗區 --- */
+        .quiz-box {
+            background: #fff; border: 3px dashed #888; padding: 25px; border-radius: 20px; margin-top: 30px; transition: transform 0.2s;
+        }
+        .quiz-box:hover { transform: translateY(-5px); }
+        .quiz-box h4 { font-family: 'Noto Sans TC'; font-size: 1.1rem; }
+        
+        .quiz-opt {
+            background: #fcfcfc; border: 2px solid #eee; padding: 15px; margin-top: 10px;
+            border-radius: 12px; cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .quiz-opt:hover { border-color: var(--primary-blue); background: #f0f8ff; }
+        .quiz-opt.correct { background: var(--primary-green); border-color: #2e8b57; color: #004d00; }
+        .quiz-opt.wrong { background: var(--primary-pink); border-color: #b22222; color: #8b0000; }
+        .quiz-opt i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); opacity: 0; }
+        .quiz-opt.correct i, .quiz-opt.wrong i { opacity: 1; }
+
+        /* 測驗計分與控制區 */
+        #quiz-control-panel {
+            text-align: center; margin-top: 40px; padding: 20px;
+            background: #f4f4f4; border-radius: 15px; border: 2px solid #ccc;
+        }
+        .score-display { font-size: 1.5rem; font-weight: 900; color: var(--text-serif); margin-bottom: 15px; }
+        .reset-all-btn {
+            background: #ff6b6b; color: #fff; padding: 12px 30px; font-size: 1.1rem;
+            border: none; border-radius: 50px; cursor: pointer; font-family: 'Noto Serif TC';
+            box-shadow: 0 4px 0 #d32f2f; transition: 0.1s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .reset-all-btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+
+        /* 證書區域 */
+        #certificate-area {
+            display: none; margin-top: 40px; text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #fffdf9 100%);
+            padding: 40px; border: 5px solid #d4af37; outline: 2px dashed #d4af37; outline-offset: -10px;
+            border-radius: 10px; animation: popIn 0.5s;
+        }
+        #certificate-area h2 { color: #d4af37; font-size: 2rem; margin-bottom: 20px; }
+        .cert-input {
+            padding: 10px; font-size: 1.2rem; border: 2px solid #ccc; border-radius: 5px;
+            width: 200px; text-align: center; font-family: 'Noto Sans TC';
+        }
+        .cert-btn {
+            padding: 10px 20px; font-size: 1.1rem; background: #d4af37; color: #fff;
+            border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;
+            font-weight: bold; display: inline-flex; align-items: center; gap: 5px;
+        }
+        .cert-btn:hover { background: #b8962e; }
+
+        /* --- 導師懸浮按鈕 --- */
+        .teacher-float {
+            position: fixed; bottom: 30px; right: 30px; width: 85px; height: 85px;
+            border-radius: 50%; background: #fff; border: 4px solid var(--primary-blue);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 9000;
+            overflow: hidden; padding: 5px; transition: transform 0.2s;
+        }
+        .teacher-float:hover { transform: scale(1.1) rotate(5deg); }
+        .teacher-float img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* --- Modal --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 12000; justify-content: center; align-items: center; padding: 20px;
+            backdrop-filter: blur(3px);
+        }
+        .modal-content {
+            background: #fff; color: #333; padding: 30px; border-radius: 15px;
+            max-width: 550px; width: 100%; position: relative; animation: popIn 0.3s;
+            border: 5px solid var(--primary-blue); box-shadow: 10px 10px 0 rgba(0,0,0,0.2);
+        }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 2rem; cursor: pointer; color: #aaa; }
+
+        footer { text-align: center; padding: 30px; color: #888; font-size: 1.3rem; margin-top: 50px; font-family: 'Noto Serif TC'; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.5); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .tabs { flex-direction: column; }
+            .tab-btn { border-right: none; border-bottom: 2px solid #555; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 吉祥物區域 -->
+    <div id="mascot-wrapper" title="拖曳我！點擊我！">
+        <div id="mascot-bubble">公民神有三力：注意力、記憶力、戰鬥力！</div>
+        <img id="mascot-img" src="image/LiyuChillGuy.svg" alt="LiyuChillGuy" draggable="false">
+    </div>
+
+    <!-- 頁首 -->
+    <header>
+        <h1><i class="fa-solid fa-shapes"></i> 班會流程大冒險系統</h1>
+        <br>
+        <div class="subtitle">融入群體的個人生活：跟著公民神一起開會吧！</div>
+    </header>
+
+    <div class="container">
+
+        <!-- STEP 1: 角色 -->
+        <div class="section-title">
+            <div class="tape-deco"></div>
+            <div class="section-badge">
+                <i class="fa-solid fa-users-viewfinder"></i> 1. 選出班會鐵三角
+            </div>
+        </div>
+        <p style="text-align:center; margin-bottom:20px; color:#888;">
+            <i class="fa-solid fa-hand-pointer"></i> 點擊角色圖片，翻面查看詳細職責！
+        </p>
+        
+        <div class="role-grid">
+            <!-- 主席 -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="role/主席.svg" alt="主席" class="role-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1995/1995515.png'">
+                        <div class="role-title"><i class="fa-solid fa-gavel"></i> 主席</div>
+                        <p style="font-size:0.9rem; color:#888;">會議的靈魂人物</p>
+                    </div>
+                    <div class="flip-card-back">
+                        <h3><i class="fa-solid fa-star"></i> 主席職責：</h3>
+                        <ul>
+                            <li>主持會議，賦予參加人員發言地位。</li>
+                            <li>維持會場秩序，裁決<strong>權宜</strong>與<strong>秩序</strong>問題。</li>
+                            <li>處理提案討論與表決，宣布結果。</li>
+                        </ul>
+                        <div class="note-bubble" style="margin:10px; padding:10px; font-size:0.9rem; background:#fff0f5; border-left-color:#ff9a9e;">
+                            <strong>⚠️ 保持中立</strong>
+                            原則上「不發表意見」、「不參與表決」。只有在「投事」同票時才投關鍵一票。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 司儀 -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="role/司儀.svg" alt="司儀" class="role-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2921/2921226.png'">
+                        <div class="role-title"><i class="fa-solid fa-microphone-lines"></i> 司儀</div>
+                        <p style="font-size:0.9rem; color:#888;">程序的引導者</p>
+                    </div>
+                    <div class="flip-card-back">
+                        <h3><i class="fa-solid fa-list-ol"></i> 司儀職責：</h3>
+                        <ul>
+                            <li>宣布會議程序 (大聲唸出目前進行到的流程)。</li>
+                            <li>協助主席掌控議程。</li>
+                            <li>確保會議順利進行，不偏離主題。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 紀錄 -->
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="role/紀錄.svg" alt="紀錄" class="role-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3050/3050525.png'">
+                        <div class="role-title"><i class="fa-solid fa-pen-to-square"></i> 紀錄</div>
+                        <p style="font-size:0.9rem; color:#888;">過程的見證者</p>
+                    </div>
+                    <div class="flip-card-back">
+                        <h3><i class="fa-solid fa-book-open"></i> 詳實記錄：</h3>
+                        <ul>
+                            <li>報告事宜 (誰報告了什麼)。</li>
+                            <li>選舉或表決的方法 (舉手? 投票?)。</li>
+                            <li>票數、結果 (幾票贊成、幾票反對)。</li>
+                            <li>決議的要點 (最後決定做什麼)。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [互動 #1] -->
+        <div class="mini-challenge-box">
+            <div class="mini-tag"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #1</div>
+            <div class="challenge-header">Q: 誰負責維持會場秩序、裁決問題？</div>
+            <div class="mini-options">
+                <div class="mini-btn" onclick="checkMini(this, true)">主席</div>
+                <div class="mini-btn" onclick="checkMini(this, false)">司儀</div>
+                <div class="mini-btn" onclick="checkMini(this, false)">紀錄</div>
+            </div>
+            <div class="mini-feedback"></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="section-title">
+            <div class="tape-deco" style="background:rgba(162, 210, 255, 0.5);"></div>
+            <div class="section-badge" style="background:var(--primary-pink);">
+                <i class="fa-solid fa-bullhorn"></i> 2. 宣布開會 & 報告
+            </div>
+        </div>
+        
+        <div class="step-box">
+            <div class="step-header">
+                <i class="fa-solid fa-flag step-icon"></i>
+                <h3>宣布開會</h3>
+            </div>
+            <p>由主席宣布：會議名稱、議程與開會目的。這代表會議正式開始！</p>
+        </div>
+        <div class="step-box">
+            <div class="step-header">
+                <i class="fa-solid fa-chart-pie step-icon"></i>
+                <h3>報告事項</h3>
+            </div>
+            <p>由主席與班級幹部進行工作報告。例如衛生股長報告打掃情況、風紀股長報告秩序情況。</p>
+        </div>
+
+        <!-- [互動 #2] -->
+        <div class="mini-challenge-box" style="border-color:var(--primary-blue);">
+            <div class="mini-tag" style="background:var(--primary-blue); border-color:var(--primary-blue); color:#fff;"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #2</div>
+            <div class="challenge-header">Q: 在「報告事項」階段，大家應該？</div>
+            <div class="mini-options">
+                <div class="mini-btn" onclick="checkMini(this, false)">準備進行表決</div>
+                <div class="mini-btn" onclick="checkMini(this, true)">安靜聆聽幹部報告現況</div>
+                <div class="mini-btn" onclick="checkMini(this, false)">提出臨時動議</div>
+            </div>
+            <div class="mini-feedback"></div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="section-title">
+            <div class="tape-deco" style="background:rgba(199, 249, 204, 0.5);"></div>
+            <div class="section-badge" style="background:#ffcc00; color:#333;">
+                <i class="fa-solid fa-comments"></i> 3. 討論事項 (核心重點)
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab(event, 'tab1')">
+                    <i class="fa-solid fa-hand-holding-heart"></i> 提案與動議
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab2')">
+                    <i class="fa-solid fa-comments-dollar"></i> 討論
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab3')">
+                    <i class="fa-solid fa-check-to-slot"></i> 表決
+                </button>
+            </div>
+
+            <!-- Tab 1: 提案 -->
+            <div id="tab1" class="tab-content active">
+                <h4 style="color:#ff6b6b;"><i class="fa-solid fa-sink"></i> 案例：班遊要去何處？</h4>
+                <div style="background:#fff; border:2px solid #ddd; padding:15px; border-radius:10px; margin:10px 0;">
+                    <i class="fa-regular fa-comment-dots"></i> 小利：最近木柵動物園有開放夜間遊館活動，感覺很好玩，我要在班會提出！<br>
+                    <i class="fa-regular fa-face-smile"></i> 大餘：聽起來好讚，我也支持這個想法！
+                </div>
+
+                <p>要讓大家討論一件事，有兩種方法：</p>
+                <table class="notebook-table">
+                    <tr>
+                        <th>項目</th>
+                        <th>提案 (Proposal)</th>
+                        <th>動議 (Motion)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>時間</strong></td>
+                        <td>開會<span style="color:red">前</span></td>
+                        <td>開會<span style="color:red">中</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>方式</strong></td>
+                        <td><span style="color:red">書面</span>呈現</td>
+                        <td><span style="color:red">口頭</span>提出</td>
+                    </tr>
+                    <tr>
+                        <td><strong>條件</strong></td>
+                        <td>需 1 人以上<strong>「附<span style="color:red">署</span>」</strong>(簽名)</td>
+                        <td>需 1 人以上<strong>「附<span style="color:red">議</span>」</strong>(口頭)</td>
+                    </tr>
+                </table>
+
+                <div class="note-bubble">
+                    <strong>💡 為什麼需要附署/附議？</strong>
+                    這是為了證明這個提議「不孤單，不是只有一個人想討論」，這樣可以避免浪費大家的時間，聚焦在更有共識的地方！
+                </div>
+
+                <!-- [互動 #3] -->
+                <div class="mini-challenge-box" style="margin: 20px 0; border-style: dotted;">
+                    <div class="mini-tag" style="background:#ff6b6b; border-color:#ff6b6b; color:#fff;"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #3</div>
+                    <div class="challenge-header" style="font-size:1.1rem;">Q: 想要在「開會前」就讓大家知道我想討論什麼，應該寫？</div>
+                    <div class="mini-options">
+                        <div class="mini-btn" onclick="checkMini(this, true)">提案單 (提案)</div>
+                        <div class="mini-btn" onclick="checkMini(this, false)">傳紙條</div>
+                        <div class="mini-btn" onclick="checkMini(this, false)">臨時動議</div>
+                    </div>
+                    <div class="mini-feedback"></div>
+                </div>
+            </div>
+
+            <!-- Tab 2: 討論 -->
+            <div id="tab2" class="tab-content">
+                <h4><i class="fa-solid fa-scale-balanced"></i> 討論規則與禮儀</h4>
+                <ul style="list-style:none; padding-left:10px;">
+                    <li style="margin-bottom:10px;"><i class="fa-solid fa-check" style="color:green;"></i> <strong>發言地位：</strong> 發言前必須舉手，經主席同意才能發表。</li>
+                    <li style="margin-bottom:10px;"><i class="fa-solid fa-check" style="color:green;"></i> <strong>內容：</strong> 意見表達盡量簡明扼要，不要長篇大論。</li>
+                    <li style="margin-bottom:10px;"><i class="fa-solid fa-heart" style="color:red;"></i> <strong>態度：</strong> 應尊重別人發言，禁止人身攻擊。</li>
+                </ul>
+                
+                <hr style="border: 1px dashed #ccc; margin: 20px 0;">
+                
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> 突發情況！該怎麼處理？</h4>
+                <p>如果遇到以下情況，可以打斷會議提出問題：</p>
+                
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+                    <button class="action-btn btn-pink" onclick="openModal('modal-privilege')">
+                        <i class="fa-solid fa-circle-question"></i> 權宜問題
+                    </button>
+                    <button class="action-btn btn-blue" onclick="openModal('modal-order')">
+                        <i class="fa-solid fa-gavel"></i> 秩序問題
+                    </button>
+                </div>
+
+                <!-- [互動 #4] (原 #5 移到這裡) -->
+                <div class="mini-challenge-box" style="border-color:#ff9a9e; margin-top:30px;">
+                    <div class="mini-tag" style="background:#ff9a9e; border-color:#ff9a9e; color:#fff;"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #4</div>
+                    <div class="challenge-header">Q: 會議中突然有人開始聊天，秩序混亂吵鬧聽不到聲音，該提出？</div>
+                    <div class="mini-options">
+                        <div class="mini-btn" onclick="checkMini(this, true)">權宜問題</div>
+                        <div class="mini-btn" onclick="checkMini(this, false)">秩序問題</div>
+                    </div>
+                    <div class="mini-feedback"></div>
+                </div>
+            </div>
+
+            <!-- Tab 3: 表決 -->
+            <div id="tab3" class="tab-content">
+                <h4><i class="fa-solid fa-check-double"></i> 表決三步驟</h4>
+                <ol style="margin-left:20px; line-height:2;">
+                    <li><strong>順序：</strong> <span style="color:red">『先』</span>提名(議)，<span style="color:red">『先』</span>表決。</li>
+                    <li><strong>方式：</strong> 舉手、投票、起立、或是起立鼓掌。</li>
+                    <li><strong>結果：</strong> 依<strong><span style="color:red">多數決</span></strong>的原則宣布表決結果。</li>
+                </ol>
+                <br>
+                <div class="note-bubble" style="background:#fff3cd; border-left-color:#ffc107;">
+                    <strong>⚠️ 觀念釐清：多數決的限制</strong>
+                    <p>多數決不是萬能的！我們<strong>不可以以多數決決定：</strong>
+客觀存在的事實。...<i class="fa-solid fa-xmark"></i>例如：埃及有沒有金字塔？<br>
+自然界的法則。..<i class="fa-solid fa-xmark"></i>例如：認定太陽是繞著地球轉？<br>
+純屬個人，而與他人或公共無關的事務。...<i class="fa-solid fa-xmark"></i>	例如：今天班長的便當要訂什麼口味？ <br>
+限制或奪取少數人的權利。...<i class="fa-solid fa-xmark"></i>例如：身高最矮前五名不能下課？ <br>
+科學上已證明的事實。...<i class="fa-solid fa-xmark"></i>例如：主張水的元素是金？ <br>
+以多數決來廢除多數決。...<i class="fa-solid fa-xmark"></i>例如：班長以多數決來決定之後班務直接由他決定？ </p>
+                </div>
+
+                <!-- [互動 #5] (原 #4 順延) -->
+                <div class="mini-challenge-box" style="margin: 20px 0; border-style: dotted; border-color: #ffc107;">
+                    <div class="mini-tag" style="background:#ffc107; border-color:#ffc107; color:#333;"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #5</div>
+                    <div class="challenge-header" style="font-size:1.1rem;">Q: 表決的時候，應該先表決哪一個提案？</div>
+                    <div class="mini-options">
+                        <div class="mini-btn" onclick="checkMini(this, true)">先提名的先表決</div>
+                        <div class="mini-btn" onclick="checkMini(this, false)">後提名的先表決</div>
+                        <div class="mini-btn" onclick="checkMini(this, false)">主席喜歡的先表決</div>
+                    </div>
+                    <div class="mini-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="section-title">
+            <div class="tape-deco" style="background:rgba(226, 203, 247, 0.5);"></div>
+            <div class="section-badge" style="background:#9c27b0;">
+                <i class="fa-solid fa-door-open"></i> 4. 臨時動議 & 散會
+            </div>
+        </div>
+        
+        <div class="step-box" style="background:#e0f7fa;">
+            <h3><i class="fa-regular fa-lightbulb"></i> 臨時動議</h3>
+            <p>議程討論完後，主席詢問：「有無臨時動議？」。<br>
+            如果這時候突然想到非原定議程的事（例如：突然想討論班服圖案），就可以舉手提出。</p>
+        </div>
+        
+        <div class="step-box" style="background:#ffecb3;">
+            <h3><i class="fa-solid fa-hand-spock"></i> 散會</h3>
+            <p>所有事情都處理完了，主席宣布散會。會議結束。</p>
+        </div>
+
+        <!-- [互動 #6] -->
+        <div class="mini-challenge-box" style="border-color:#9c27b0;">
+            <div class="mini-tag" style="background:#9c27b0; border-color:#9c27b0; color:#fff;"><i class="fa-solid fa-bolt"></i> 隨堂小挑戰 #6</div>
+            <div class="challenge-header">Q: 所有議程都結束了，主席宣布散會，這時候才可以？</div>
+            <div class="mini-options">
+                <div class="mini-btn" onclick="checkMini(this, false)">開始討論班服</div>
+                <div class="mini-btn" onclick="checkMini(this, true)">離開座位下課</div>
+                <div class="mini-btn" onclick="checkMini(this, false)">提出秩序問題</div>
+            </div>
+            <div class="mini-feedback"></div>
+        </div>
+
+        <!-- 測驗區 (10 題) -->
+        <div class="section-title">
+            <div class="section-badge" style="background:#333;">
+                <i class="fa-solid fa-pencil"></i> 公民神的隨堂測驗 (滿分100可領證書)
+            </div>
+        </div>
+        
+        <!-- 題目區域 -->
+        <div id="quiz-container">
+            <!-- Q1 -->
+            <div class="quiz-box">
+                <h4>Q1. 開會時，隔壁班太吵鬧或教室突然停電，影響到會議進行，這時應該提出什麼？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">A. 權宜問題 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 秩序問題 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 臨時動議 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 散會動議 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-box">
+                <h4>Q2. 關於「主席」的職責與態度，下列哪一個描述是正確的？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 應該積極發表個人意見引導大家 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">B. 原則上不投票、不發言，保持中立 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 負責記錄會議的所有細節 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 負責宣讀會議的流程 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-box">
+                <h4>Q3. 小利在開會「前」就寫好了班遊計畫書，想在班會討論。這屬於什麼？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">A. 提案 (Proposal) <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 動議 (Motion) <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 偶發事件 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 秩序問題 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-box">
+                <h4>Q4. 承上題，如果是「開會中」才口頭提出的建議，稱為什麼？且需要什麼條件？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 提案；需要一人附署 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 動議；需要主席同意 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">C. 動議；需要一人以上附議 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 提案；需要全班通過 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-box">
+                <h4>Q5. 在班會中，「導師」的角色應該是什麼？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 同票時，負責裁決 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">B. 提示規則的顧問，不參與表決 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 擔任主席主持會議 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 負責記錄會議內容 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="quiz-box">
+                <h4>Q6. 會議進行中，如果有人發言偏離主題或進行人身攻擊，違反了議事規則，可提出什麼？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 權宜問題 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">B. 秩序問題 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 臨時動議 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 直接報警 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="quiz-box">
+                <h4>Q7. 關於「多數決」的限制，下列哪一項是可以透過投票表決決定的？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 地球是不是圓的？ <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 身高未滿150公分的人不能吃午餐？ <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">C. 這次校慶園遊會班上要賣什麼？ <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 公民神今天晚餐要吃麵還是吃飯？ <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="quiz-box">
+                <h4>Q8. 班會中，誰負責宣布目前的會議程序，協助主席掌控流程？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 紀錄 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 風紀股長 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">C. 司儀 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 導師 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="quiz-box">
+                <h4>Q9. 關於「臨時動議」的提出時機，下列何者正確？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 會議一開始就先提出 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">B. 隨時想提就舉手 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">C. 原定議程討論完畢後，散會前提出 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 必須在開會前提交書面資料 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="quiz-box">
+                <h4>Q10. 下列哪一項不是「紀錄」的工作內容？</h4>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">A. 記下表決的票數與結果 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, true)">B. 決定誰可以發言 <i class="fa-solid fa-check"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">C. 記下決議的要點 <i class="fa-solid fa-xmark"></i></div>
+                <div class="quiz-opt" onclick="checkAnswer(this, false)">D. 記下報告事項的內容 <i class="fa-solid fa-xmark"></i></div>
+                <div class="feedback-msg" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+        </div>
+
+        <!-- 測驗控制面板 -->
+        <div id="quiz-control-panel">
+            <div class="score-display">目前得分：<span id="current-score">0</span> / 100</div>
+            <button class="reset-all-btn" onclick="resetMainQuiz()">
+                <i class="fa-solid fa-rotate-right"></i> 全部重新作答 (清空)
+            </button>
+        </div>
+
+        <!-- 證書區域 -->
+        <div id="certificate-area">
+            <h2>🏆 恭喜通過班會流程大冒險！</h2>
+            <p style="margin-bottom:20px;">您已經精通班會流程成為開班會神！請輸入姓名領取證書！</p>
+            <input type="text" id="cert-name" class="cert-input" placeholder="請輸入姓名">
+            <button class="cert-btn" onclick="generateCertificate()">
+                <i class="fa-solid fa-file-arrow-down"></i> 生成並下載證書
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 導師懸浮按鈕 -->
+    <div class="teacher-float" onclick="openModal('modal-teacher')" title="導師小叮嚀">
+        <img src="role/導師.svg" alt="導師" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3429/3429433.png'">
+    </div>
+
+    <!-- Modals (彈窗) -->
+    
+    <!-- 導師 Modal -->
+    <div id="modal-teacher" class="modal">
+        <div class="modal-content" style="border-color:var(--primary-blue);">
+            <span class="close-btn" onclick="closeModal('modal-teacher')">&times;</span>
+            <h3 style="color:var(--primary-blue);"><i class="fa-solid fa-chalkboard-user"></i> 公民神小叮嚀</h3>
+            <hr style="margin:10px 0; border:0; border-top:1px dashed #ccc;">
+            <p>成為開班會神，不再只是夢想！</p>
+            <ul style="margin-left:20px; margin-top:10px;">
+                <li>班會是培養<strong>民主素養</strong>最好的練習場。</li>
+                <li>開班會時，老師在旁邊是「顧問」的角色，負責觀察大家，如果程序出錯才可能提示規則。</li>
+                <li>老師<strong>不會</strong>介入表決過程和結果，把決定權留給學生，落實學生自治！</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 權宜問題 Modal -->
+    <div id="modal-privilege" class="modal">
+        <div class="modal-content" style="border-color:#ff9a9e;">
+            <span class="close-btn" onclick="closeModal('modal-privilege')">&times;</span>
+            <h3 style="color:#ff6b6b;"><i class="fa-solid fa-circle-question"></i> 權宜問題</h3>
+            <div style="background:#fff0f0; padding:10px; border-radius:10px; margin:10px 0;">
+                <strong>口訣：</strong> 突發緊急情況、權宜之計、事有輕重緩急。
+            </div>
+            <p><strong>定義：</strong> 議場偶發的緊急事件，影響議場全體。</p>
+            <p><strong>例子：</strong>
+                <br>1. 議場太雜鬧，聽不到聲音。
+                <br>2. 突然停電，光線太暗，看不清楚。
+                <br>3. 冷氣壞了太熱，導致有人突然昏倒。
+		<br>4. 突然地震、失火。
+		<br>5. 有虎頭蜂群飛進教室。
+            </p>
+            <p><strong>處理：</strong> 主席必須馬上決定是否先暫停會議，優先處理該事。</p>
+        </div>
+    </div>
+
+    <!-- 秩序問題 Modal -->
+    <div id="modal-order" class="modal">
+        <div class="modal-content" style="border-color:#a2d2ff;">
+            <span class="close-btn" onclick="closeModal('modal-order')">&times;</span>
+            <h3 style="color:#1565c0;"><i class="fa-solid fa-gavel"></i> 秩序問題</h3>
+            <div style="background:#e3f2fd; padding:10px; border-radius:10px; margin:10px 0;">
+                <strong>口訣：</strong> 秩序的序是「順序」，指流程錯誤。
+            </div>
+            <p><strong>定義：</strong> 議題進行發生「議事程序錯誤」。</p>
+            <p><strong>例子：</strong>
+                <br>1. 發言離題（超出議題範圍）。
+                <br>2. 有人插嘴、不理性發言。
+                <br>3. 還沒附議，主席就開始讓人討論。
+            </p>
+            <p><strong>處理：</strong> 請求主席糾正錯誤的程序。</p>
+        </div>
+    </div>
+
+    <footer>
+        Copyright © Liyuchiutiger Gongminshen
+    </footer>
+
+    <script>
+        // --- 吉祥物互動邏輯 ---
+        const mascotWrapper = document.getElementById('mascot-wrapper');
+        const mascotBubble = document.getElementById('mascot-bubble');
+        let isDragging = false;
+        let startX, startY, initialLeft, initialBottom;
+        let isClick = true;
+
+        const quotes = [
+            "邱俐瑜公民，成為公民神不再只是夢想！",
+            "第一句：公民好神！我會遵守公民神會員守則！",
+            "第二句：努力向上、勇往直前、不畏艱難，我要成為公民神！",
+            "第三句：公民神有三力：注意力、記憶力、戰鬥力！"
+        ];
+        let quoteIndex = 0;
+        let bubbleTimer;
+
+        mascotWrapper.addEventListener('mousedown', dragStart);
+        mascotWrapper.addEventListener('touchstart', dragStart, {passive: false});
+
+        function dragStart(e) {
+            isDragging = true; isClick = true;
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+                e.preventDefault(); 
+            }
+            
+            const rect = mascotWrapper.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialBottom = window.innerHeight - rect.bottom;
+            mascotWrapper.style.cursor = 'grabbing';
+        }
+
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('touchmove', dragMove, {passive: false});
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            let clientX, clientY;
+            if (e.type === 'touchmove') { e.preventDefault(); clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
+            else { clientX = e.clientX; clientY = e.clientY; }
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) isClick = false;
+
+            mascotWrapper.style.left = `${initialLeft + dx}px`;
+            mascotWrapper.style.bottom = `${initialBottom - dy}px`;
+        }
+
+        window.addEventListener('mouseup', dragEnd);
+        window.addEventListener('touchend', dragEnd);
+
+        function dragEnd() {
+            if (isDragging) {
+                isDragging = false;
+                mascotWrapper.style.cursor = 'grab';
+                if (isClick) showQuote();
+            }
+        }
+
+        function showQuote() {
+            mascotBubble.innerText = quotes[quoteIndex];
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            
+            mascotBubble.style.opacity = '1';
+            mascotBubble.style.transform = 'translateX(-50%) scale(1)';
+            
+            clearTimeout(bubbleTimer);
+            bubbleTimer = setTimeout(() => {
+                mascotBubble.style.opacity = '0';
+                mascotBubble.style.transform = 'translateX(-50%) scale(0)';
+            }, 3000);
+        }
+
+        // --- 頁籤切換 ---
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
+        }
+
+        // --- 隨堂小挑戰邏輯 (含重置) ---
+        function checkMini(btn, isCorrect) {
+            const parent = btn.parentElement.parentElement;
+            const feedback = parent.querySelector('.mini-feedback');
+            const btns = parent.querySelectorAll('.mini-btn');
+            
+            btns.forEach(b => b.style.pointerEvents = 'none'); // 鎖定
+
+            feedback.style.display = 'block';
+            if(isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = '<span style="color:green"><i class="fa-solid fa-circle-check"></i> 答對了！果然是公民好神！</span> <button class="mini-reset-btn" onclick="resetMini(this)"><i class="fa-solid fa-rotate-right"></i> 重新作答</button>';
+            } else {
+                btn.classList.add('wrong');
+                feedback.innerHTML = '<span style="color:red"><i class="fa-solid fa-circle-xmark"></i> 答錯囉！再想一下後重新作答！</span> <button class="mini-reset-btn" onclick="resetMini(this)"><i class="fa-solid fa-rotate-right"></i> 重新作答</button>';
+            }
+        }
+
+        function resetMini(resetBtn) {
+            const parent = resetBtn.closest('.mini-challenge-box');
+            const feedback = parent.querySelector('.mini-feedback');
+            const btns = parent.querySelectorAll('.mini-btn');
+
+            btns.forEach(b => {
+                b.style.pointerEvents = 'auto'; // 解鎖
+                b.classList.remove('correct', 'wrong');
+            });
+            feedback.style.display = 'none';
+        }
+
+        // --- 測驗功能 (含計分、全部重置、證書) ---
+        function checkAnswer(el, isCorrect) {
+            const parent = el.parentElement;
+            const feedback = parent.querySelector('.feedback-msg');
+            const options = parent.querySelectorAll('.quiz-opt');
+            
+            // 鎖定選項
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            if (isCorrect) {
+                el.classList.add('correct');
+                feedback.innerHTML = "<span style='color:green'><i class='fa-solid fa-face-laugh-squint'></i> 對了！果然是公民好神！(+10分)</span>";
+                updateScore(10);
+            } else {
+                el.classList.add('wrong');
+                feedback.innerHTML = "<span style='color:red'><i class='fa-solid fa-face-dizzy'></i> 答錯了！再想一下後重新作答！（注意，隨堂測驗重新作答需全部清空＜下滑至最底＞，避免濫猜答案。）</span>";
+                // 標示正確答案
+                options.forEach(opt => {
+                    if(opt.getAttribute('onclick').includes('true')) opt.classList.add('correct');
+                });
+            }
+        }
+
+        let currentScore = 0;
+        function updateScore(points) {
+            currentScore += points;
+            document.getElementById('current-score').innerText = currentScore;
+            
+            // 滿分顯示證書區
+            if(currentScore === 100) {
+                document.getElementById('certificate-area').style.display = 'block';
+                // 滾動到證書區
+                setTimeout(() => {
+                    document.getElementById('certificate-area').scrollIntoView({ behavior: 'smooth' });
+                }, 500);
+            }
+        }
+
+        function resetMainQuiz() {
+            // 確認重置
+            if(!confirm("確定要清空所有 10 題的作答紀錄並重來嗎？分數將歸零。")) return;
+
+            // 歸零分數
+            currentScore = 0;
+            document.getElementById('current-score').innerText = "0";
+            document.getElementById('certificate-area').style.display = 'none';
+
+            // 重置所有選項
+            const allOpts = document.querySelectorAll('.quiz-opt');
+            allOpts.forEach(opt => {
+                opt.classList.remove('correct', 'wrong');
+                opt.style.pointerEvents = 'auto';
+            });
+
+            // 清空回饋訊息
+            const allFeedbacks = document.querySelectorAll('.feedback-msg');
+            allFeedbacks.forEach(msg => msg.innerHTML = "");
+
+            // 滾動回第一題
+            document.getElementById('quiz-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- 證書生成與下載 (Canvas) ---
+        function generateCertificate() {
+            const name = document.getElementById('cert-name').value.trim();
+            if(!name) { alert("請先輸入姓名喔！"); return; }
+
+            // 建立 Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 700;
+            const ctx = canvas.getContext('2d');
+
+            // 背景與邊框
+            ctx.fillStyle = "#fffdf9";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 金色邊框
+            ctx.strokeStyle = "#d4af37";
+            ctx.lineWidth = 20;
+            ctx.strokeRect(20, 20, 960, 660);
+            
+            ctx.strokeStyle = "#2c3e50";
+            ctx.lineWidth = 5;
+            ctx.strokeRect(40, 40, 920, 620);
+
+            // 標題
+            ctx.fillStyle = "#d4af37";
+            ctx.font = "bold 60px 'Noto Serif TC', serif";
+            ctx.textAlign = "center";
+            ctx.fillText("公民神班會流程大冒險通過證書", canvas.width/2, 150);
+
+            // 內文
+            ctx.fillStyle = "#333";
+            ctx.font = "40px 'Noto Sans TC', sans-serif";
+            ctx.fillText("茲證明", canvas.width/2, 250);
+            
+            // 姓名
+            ctx.fillStyle = "#2c3e50";
+            ctx.font = "bold 80px 'Noto Serif TC', serif";
+            ctx.fillText(name, canvas.width/2, 360);
+            
+            // 內容
+            ctx.fillStyle = "#555";
+            ctx.font = "30px 'Noto Sans TC', sans-serif";
+            ctx.fillText("已成功通過「班會流程大冒險」所有試煉，", canvas.width/2, 450);
+            ctx.fillText("特頒此證，以資鼓勵！", canvas.width/2, 500);
+
+            // 日期
+            const date = new Date();
+            const dateStr = `${date.getFullYear()} 年 ${date.getMonth()+1} 月 ${date.getDate()} 日`;
+            ctx.font = "25px 'Noto Sans TC', sans-serif";
+            ctx.fillStyle = "#888";
+            ctx.fillText(dateStr, 800, 600);
+
+            // 下載
+            const link = document.createElement('a');
+            link.download = `公民神班會流程大冒險通過證書_${name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // --- Modal 控制 ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(e) { if(e.target.classList.contains('modal')) e.target.style.display='none'; }
+    </script>
+</body>
+</html>
